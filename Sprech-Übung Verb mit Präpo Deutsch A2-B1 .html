@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B1 Grammatik-Trainer: Verben mit Präpositionen</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --warning: #f39c12;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 24px;
+            position: relative;
+            padding-bottom: 50px; /* Space for watermark */
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin: 0 0 6px 0;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Top Bar: Timer & Counter */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .timer-config {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+
+        .timer-display {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--danger);
+            background: #fde8e8;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .card-counter {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* Virtual Illustration Area */
+        .illustration-card {
+            width: 100%;
+            height: 140px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+            border: 1px solid #7dd3fc;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .illustration-emoji {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            animation: bounce 2s infinite;
+        }
+
+        .illustration-topic {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #0369a1;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Question & Choice Area */
+        .card-body {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .prompt-th {
+            font-size: 1rem;
+            color: #475569;
+            margin-bottom: 10px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .prompt-de {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 16px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .blank-space {
+            color: var(--warning);
+            text-decoration: underline;
+            padding: 0 4px;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .btn-choice {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--primary);
+        }
+
+        .btn-choice:hover:not(:disabled) {
+            background: #e2e8f0;
+            border-color: var(--accent);
+        }
+
+        .btn-choice.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #14532d !important;
+        }
+
+        .btn-choice.incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+            color: #7f1d1d !important;
+        }
+
+        /* Hilfswortschatz */
+        .help-box {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+        }
+
+        .help-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #b45309;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .help-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .chip {
+            background: #ffffff;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Solution Area */
+        .solution-box {
+            display: none;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .solution-box.active {
+            display: block;
+        }
+
+        .solution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .solution-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #15803d;
+        }
+
+        .audio-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .audio-btn:hover {
+            background: #166534;
+        }
+
+        .solution-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #166534;
+            margin: 0;
+        }
+
+        .solution-th-text {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-top: 4px;
+        }
+
+        /* Action Buttons */
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-draw {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-draw:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-solution {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-solution:hover {
+            background: #475569;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 16px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🇩🇪 B1 Grammatik-Trainer</h1>
+            <p>Fragen stellen & spontan antworten (Verben mit Präpositionen)</p>
+        </div>
+
+        <!-- Top Controls: Timer & Deck Counter -->
+        <div class="top-bar">
+            <div class="timer-config">
+                <label for="timerSelect">⏱️ ตัวจับเวลา:</label>
+                <select id="timerSelect" onchange="resetTimer()">
+                    <option value="60">1 Minuten</option>
+                    <option value="30">30 Sekunden</option>
+                </select>
+            </div>
+            <div class="timer-display" id="timerDisplay">01:00</div>
+            <div class="card-counter" id="cardCounter">การ์ด: 0 / 50</div>
+        </div>
+
+        <!-- Virtual Illustration Banner -->
+        <div class="illustration-card">
+            <div class="illustration-emoji" id="visualEmoji">❓</div>
+            <div class="illustration-topic" id="visualTopic">Thema: Verben mit Präpositionen</div>
+        </div>
+
+        <!-- Main Card Section -->
+        <div class="card-body">
+            <div class="prompt-th" id="promptTh">กดปุ่ม "จับการ์ด (Karte ziehen)" เพื่อเริ่มต้นสุ่มโจทย์</div>
+            <div class="prompt-de" id="promptDe">_____ redet er?</div>
+
+            <!-- Choice Options A & B -->
+            <div class="choices">
+                <button class="btn-choice" id="choiceA" onclick="checkAnswer('A')">A) Wovon</button>
+                <button class="btn-choice" id="choiceB" onclick="checkAnswer('B')">B) Womit</button>
+            </div>
+
+            <!-- Hilfswortschatz -->
+            <div class="help-box">
+                <div class="help-title">💡 Hilfswortschatz (คำศัพท์ช่วยตอบแบบ Spontan):</div>
+                <div class="help-chips" id="helpChips">
+                    <span class="chip">กดจับการ์ดเพื่อดูคำศัพท์</span>
+                </div>
+            </div>
+
+            <!-- Solution Section -->
+            <div class="solution-box" id="solutionBox">
+                <div class="solution-header">
+                    <span class="solution-title">Musterlösung (ตัวอย่างคำตอบ):</span>
+                    <button class="audio-btn" onclick="playAudio()">🔊 ฟังเสียงอ่าน</button>
+                </div>
+                <p class="solution-text" id="solutionDe"></p>
+                <div class="solution-th-text" id="solutionTh"></div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="controls">
+            <button class="btn-action btn-draw" onclick="drawCard()">🃏 จับการ์ด / สับไพ่</button>
+            <button class="btn-action btn-solution" id="btnToggleSolution" onclick="toggleSolution()" disabled>👁️ เฉลย</button>
+        </div>
+
+        <!-- Watermark -->
+        <div class="watermark">Deutsch mit Monmanat</div>
+    </div>
+
+    <script>
+        // Full Pool of 50 Unique B1 Cards (Kein wiederholte Karte)
+        const masterDeck = [
+            {
+                emoji: "🗣️", verb: "reden von + Dat.",
+                th: "เขาพูดถึงเรื่องอะไรอยู่? (คำถามตัวอย่างแบบการ์ด B1)",
+                question: "<span class='blank-space'>_____</span> redet er?",
+                optA: "A) Wovon", optB: "B) Womit", correct: "A",
+                vocab: ["reden von + Dat.", "der Urlaub (วันหยุด)", "Er redet von..."],
+                solDe: "Wovon redet er? – Er redet von seinem letzten Urlaub.",
+                solTh: "เขาพูดถึงเรื่องอะไรอยู่? – เขาพูดถึงวันหยุดครั้งล่าสุดของเขา"
+            },
+            {
+                emoji: "🏖️", verb: "warten auf + Akk.",
+                th: "คุณกำลังรออะไรอยู่เหรอ?",
+                question: "<span class='blank-space'>_____</span> wartest du?",
+                optA: "A) Worauf", optB: "B) Wovon", correct: "A",
+                vocab: ["warten auf + Akk.", "der Bus (รถบัส)", "Ich warte auf..."],
+                solDe: "Worauf wartest du? – Ich warte auf den Bus.",
+                solTh: "คุณกำลังรออะไรอยู่? – ฉันกำลังรอรถบัส"
+            },
+            {
+                emoji: "💭", verb: "denken an + Akk.",
+                th: "คุณกำลังคิดถึงใครอยู่?",
+                question: "<span class='blank-space'>_____</span> denkst du?",
+                optA: "A) An wen", optB: "B) Woran", correct: "A",
+                vocab: ["denken an + Akk.", "meine Familie (ครอบครัวของฉัน)", "Ich denke an..."],
+                solDe: "An wen denkst du? – Ich denke an meine Familie.",
+                solTh: "คุณกำลังคิดถึงใครอยู่? – ฉันกำลังคิดถึงครอบครัวของฉัน"
+            },
+            {
+                emoji: "🎁", verb: "sich freuen auf + Akk.",
+                th: "คุณกำลังตั้งตารออะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> freust du dich?",
+                optA: "A) Worauf", optB: "B) Worüber", correct: "A",
+                vocab: ["sich freuen auf + Akk.", "das Wochenende (วันหยุดสุดสัปดาห์)", "Ich freue mich auf..."],
+                solDe: "Worauf freust du dich? – Ich freue mich auf das Wochenende.",
+                solTh: "คุณกำลังตั้งตารออะไรอยู่? – ฉันกำลังตั้งตารอวันหยุดสุดสัปดาห์"
+            },
+            {
+                emoji: "🎉", verb: "sich freuen über + Akk.",
+                th: "คุณดีใจกับเรื่องอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> freust du dich?",
+                optA: "A) Worüber", optB: "B) Wofür", correct: "A",
+                vocab: ["sich freuen über + Akk.", "das Geschenk (ของขวัญ)", "Ich freue mich über..."],
+                solDe: "Worüber freust du dich? – Ich freue mich über das Geschenk.",
+                solTh: "คุณดีใจกับเรื่องอะไรอยู่? – ฉันดีใจกับของขวัญชิ้นนี้"
+            },
+            {
+                emoji: "📞", verb: "telefonieren mit + Dat.",
+                th: "คุณกำลังคุยโทรศัพท์กับใคร?",
+                question: "<span class='blank-space'>_____</span> telefonierst du?",
+                optA: "A) Mit wem", optB: "B) Womit", correct: "A",
+                vocab: ["telefonieren mit + Dat.", "meine Mutter (แม่ของฉัน)", "Ich telefoniere mit..."],
+                solDe: "Mit wem telefonierst du? – Ich telefoniere mit meiner Mutter.",
+                solTh: "คุณกำลังคุยโทรศัพท์กับใคร? – ฉันคุยโทรศัพท์กับแม่ของฉันอยู่"
+            },
+            {
+                emoji: "🔍", verb: "sich interessieren für + Akk.",
+                th: "คุณสนใจเกี่ยวกับเรื่องอะไร?",
+                question: "<span class='blank-space'>_____</span> interessierst du dich?",
+                optA: "A) Wofür", optB: "B) Wovon", correct: "A",
+                vocab: ["sich interessieren für + Akk.", "die Musik (ดนตรี)", "Ich interessiere mich für..."],
+                solDe: "Wofür interessierst du dich? – Ich interessiere mich für Musik.",
+                solTh: "คุณสนใจเกี่ยวกับเรื่องอะไร? – ฉันสนใจเกี่ยวกับดนตรี"
+            },
+            {
+                emoji: "😤", verb: "sich ärgern über + Akk.",
+                th: "คุณกำลังหงุดหงิดเรื่องอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> ärgerst du dich?",
+                optA: "A) Worüber", optB: "B) Wofür", correct: "A",
+                vocab: ["sich ärgern über + Akk.", "der Stau (รถติด)", "Ich ärgere mich über..."],
+                solDe: "Worüber ärgerst du dich? – Ich ärgere mich über den Stau.",
+                solTh: "คุณกำลังหงุดหงิดเรื่องอะไร? – ฉันหงุดหงิดเรื่องรถติด"
+            },
+            {
+                emoji: "🛌", verb: "träumen von + Dat.",
+                th: "คุณฝันถึงอะไรเมื่อคืนนี้?",
+                question: "<span class='blank-space'>_____</span> hast du geträumt?",
+                optA: "A) Wovon", optB: "B) Woran", correct: "A",
+                vocab: ["träumen von + Dat.", "das Meer (ทะเล)", "Ich habe geträumt von..."],
+                solDe: "Wovon hast du geträumt? – Ich habe vom Meer geträumt.",
+                solTh: "คุณฝันถึงอะไร? – ฉันฝันถึงทะเล"
+            },
+            {
+                emoji: "🤝", verb: "sich treffen mit + Dat.",
+                th: "เย็นนี้คุณจะไปเจอใคร?",
+                question: "<span class='blank-space'>_____</span> triffst du dich heute Abend?",
+                optA: "A) Mit wem", optB: "B) Womit", correct: "A",
+                vocab: ["sich treffen mit + Dat.", "meine Freunde (เพื่อนๆ ของฉัน)", "Ich treffe mich mit..."],
+                solDe: "Mit wem triffst du dich heute Abend? – Ich treffe mich mit meinen Freunden.",
+                solTh: "เย็นนี้คุณจะไปเจอใคร? – ฉันจะไปเจอเพื่อนๆ ของฉัน"
+            },
+            {
+                emoji: "🤝", verb: "danken für + Akk.",
+                th: "คุณขอบคุณเขาสำหรับเรื่องอะไร?",
+                question: "<span class='blank-space'>_____</span> dankst du ihm?",
+                optA: "A) Wofür", optB: "B) Wozu", correct: "A",
+                vocab: ["danken für + Akk.", "die Hilfe (ความช่วยเหลือ)", "Ich danke ihm für..."],
+                solDe: "Wofür dankst du ihm? – Ich danke ihm für die Hilfe.",
+                solTh: "คุณขอบคุณเขาเรื่องอะไร? – ฉันขอบคุณเขาสำหรับความช่วยเหลือ"
+            },
+            {
+                emoji: "❓", verb: "fragen nach + Dat.",
+                th: "เขาถามหาอะไรเหรอ?",
+                question: "<span class='blank-space'>_____</span> fragt er?",
+                optA: "A) Wonach", optB: "B) Woran", correct: "A",
+                vocab: ["fragen nach + Dat.", "der Weg (เส้นทาง)", "Er fragt nach..."],
+                solDe: "Wonach fragt er? – Er fragt nach dem Weg zum Bahnhof.",
+                solTh: "เขาถามหาอะไร? – เขาถามหาทางไปสถานีรถไฟ"
+            },
+            {
+                emoji: "🧳", verb: "sich vorbereiten auf + Akk.",
+                th: "คุณเตรียมตัวสำหรับอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> bereitest du dich vor?",
+                optA: "A) Worauf", optB: "B) Wofür", correct: "A",
+                vocab: ["sich vorbereiten auf + Akk.", "die B1-Prüfung (การสอบ B1)", "Ich bereite mich vor auf..."],
+                solDe: "Worauf bereitest du dich vor? – Ich bereite mich auf die B1-Prüfung vor.",
+                solTh: "คุณกำลังเตรียมตัวสำหรับอะไร? – ฉันกำลังเตรียมตัวสำหรับการสอบ B1"
+            },
+            {
+                emoji: "🍕", verb: "Lust haben auf + Akk.",
+                th: "คุณอยากกินหรืออยากทำอะไรตอนนี้?",
+                question: "<span class='blank-space'>_____</span> hast du jetzt Lust?",
+                optA: "A) Worauf", optB: "B) Wovon", correct: "A",
+                vocab: ["Lust haben auf + Akk.", "eine Pizza (พิซซ่า)", "Ich habe Lust auf..."],
+                solDe: "Worauf hast du jetzt Lust? – Ich habe Lust auf eine Pizza.",
+                solTh: "คุณอยากทำ/กินอะไรตอนนี้? – ฉันอยากกินพิซซ่า"
+            },
+            {
+                emoji: "😱", verb: "Angst haben vor + Dat.",
+                th: "คุณกลัวอะไรเหรอ?",
+                question: "<span class='blank-space'>_____</span> hast du Angst?",
+                optA: "A) Wovor", optB: "B) Woran", correct: "A",
+                vocab: ["Angst haben vor + Dat.", "die Spinnen (แมงมุม)", "Ich habe Angst vor..."],
+                solDe: "Wovor hast du Angst? – Ich habe Angst vor Spinnen.",
+                solTh: "คุณกลัวอะไร? – ฉันกลัวแมงมุม"
+            },
+            {
+                emoji: "💬", verb: "diskutieren über + Akk.",
+                th: "พวกคุณกำลังถกเถียงกันเรื่องอะไร?",
+                question: "<span class='blank-space'>_____</span> diskutiert ihr?",
+                optA: "A) Worüber", optB: "B) Wofür", correct: "A",
+                vocab: ["diskutieren über + Akk.", "das Thema (หัวข้อ)", "Wir diskutieren über..."],
+                solDe: "Worüber diskutiert ihr? – Wir diskutieren über das neue Thema.",
+                solTh: "พวกคุณถกเถียงกันเรื่องอะไร? – พวกเรากำลังถกกันเรื่องหัวข้อใหม่"
+            },
+            {
+                emoji: "🎂", verb: "gratulieren zu + Dat.",
+                th: "คุณแสดงความยินดีกับเนื่องในโอกาสอะไร?",
+                question: "<span class='blank-space'>_____</span> gratulierst du ihm?",
+                optA: "A) Wozu", optB: "B) Wofür", correct: "A",
+                vocab: ["gratulieren zu + Dat.", "der Geburtstag (วันเกิด)", "Ich gratuliere ihm zum..."],
+                solDe: "Wozu gratulierst du ihm? – Ich gratuliere ihm zum Geburtstag.",
+                solTh: "คุณยินดีกับเขาเนื่องในโอกาสอะไร? – ฉันยินดีกับเขาเนื่องในวันเกิด"
+            },
+            {
+                emoji: "🆘", verb: "helfen bei + Dat.",
+                th: "คุณช่วยเขาทำอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> hilfst du ihm?",
+                optA: "A) Wobei", optB: "B) Womit", correct: "A",
+                vocab: ["helfen bei + Dat.", "die Hausarbeit (งานบ้าน)", "Ich helfe ihm bei..."],
+                solDe: "Wobei hilfst du ihm? – Ich helfe ihm bei der Hausarbeit.",
+                solTh: "คุณช่วยเขาทำอะไร? – ฉันช่วยเขาทำงานบ้าน"
+            },
+            {
+                emoji: "🏠", verb: "wohnen bei + Dat.",
+                th: "ตอนนี้คุณพักอาศัยอยู่กับใคร?",
+                question: "<span class='blank-space'>_____</span> wohnst du zurzeit?",
+                optA: "A) Bei wem", optB: "B) Mit wem", correct: "A",
+                vocab: ["wohnen bei + Dat.", "meine Tante (ป้าของฉัน)", "Ich wohne bei..."],
+                solDe: "Bei wem wohnst du zurzeit? – Ich wohne bei meiner Tante.",
+                solTh: "ตอนนี้คุณพักอาศัยอยู่กับใคร? – ฉันพักอยู่กับคุณป้า"
+            },
+            {
+                emoji: "🔧", verb: "arbeiten an + Dat.",
+                th: "คุณกำลังทำงาน/โปรเจกต์อะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> arbeitest du gerade?",
+                optA: "A) Woran", optB: "B) Wobei", correct: "A",
+                vocab: ["arbeiten an + Dat.", "ein Projekt (โปรเจกต์)", "Ich arbeite an..."],
+                solDe: "Woran arbeitest du gerade? – Ich arbeite an einem neuen Projekt.",
+                solTh: "คุณกำลังทำอะไรอยู่? – ฉันกำลังทำโปรเจกต์ใหม่"
+            },
+            {
+                emoji: "🌧️", verb: "sich beschweren über + Akk.",
+                th: "คุณบ่นเกี่ยวกับเรื่องอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> beschwerst du dich?",
+                optA: "A) Worüber", optB: "B) Wofür", correct: "A",
+                vocab: ["sich beschweren über + Akk.", "das Wetter (สภาพอากาศ)", "Ich beschwere mich über..."],
+                solDe: "Worüber beschwerst du dich? – Ich beschwere mich über das Wetter.",
+                solTh: "คุณบ่นเรื่องอะไรอยู่? – ฉันบ่นเกี่ยวกับสภาพอากาศ"
+            },
+            {
+                emoji: "✈️", verb: "sich erkundigen nach + Dat.",
+                th: "คุณสอบถามข้อมูลเกี่ยวกับอะไร?",
+                question: "<span class='blank-space'>_____</span> erkundigst du dich?",
+                optA: "A) Wonach", optB: "B) Wovon", correct: "A",
+                vocab: ["sich erkundigen nach + Dat.", "der Flug (เที่ยวบิน)", "Ich erkundige mich nach..."],
+                solDe: "Wonach erkundigst du dich? – Ich erkundige mich nach dem Flug.",
+                solTh: "คุณสอบถามข้อมูลเรื่องอะไร? – ฉันสอบถามข้อมูลเกี่ยวกับเที่ยวบิน"
+            },
+            {
+                emoji: "📜", verb: "gehören zu + Dat.",
+                th: "เอกสารนี้เกี่ยวข้องหรือเป็นส่วนหนึ่งของอะไร?",
+                question: "<span class='blank-space'>_____</span> gehört dieses Dokument?",
+                optA: "A) Wozu", optB: "B) Wofür", correct: "A",
+                vocab: ["gehören zu + Dat.", "die Bewerbung (การสมัครงาน)", "Es gehört zu..."],
+                solDe: "Wozu gehört dieses Dokument? – Es gehört zu meiner Bewerbung.",
+                solTh: "เอกสารนี้เป็นส่วนหนึ่งของอะไร? – มันเป็นส่วนหนึ่งของการสมัครงานของฉัน"
+            },
+            {
+                emoji: "🔍", verb: "suchen nach + Dat.",
+                th: "คุณกำลังตามหาอะไรอยู่?",
+                question: "<span class='blank-space'>_____</span> suchst du?",
+                optA: "A) Wonach", optB: "B) Woran", correct: "A",
+                vocab: ["suchen nach + Dat.", "der Schlüssel (กุญแจ)", "Ich suche nach..."],
+                solDe: "Wonach suchst du? – Ich suche nach meinem Schlüssel.",
+                solTh: "คุณกำลังตามหาอะไรอยู่? – ฉันกำลังตามหากุญแจของฉัน"
+            },
+            {
+                emoji: "🍿", verb: "sich verabreden mit + Dat.",
+                th: "คุณมีนัดกับใครไว้หรือเปล่า?",
+                question: "<span class='blank-space'>_____</span> hast du dich verabredet?",
+                optA: "A) Mit wem", optB: "B) Bei wem", correct: "A",
+                vocab: ["sich verabreden mit + Dat.", "meine Freundin (เพื่อนสาว)", "Ich habe mich verabredet mit..."],
+                solDe: "Mit wem hast du dich verabredet? – Ich habe mich mit meiner Freundin verabredet.",
+                solTh: "คุณมีนัดกับใครไว้? – ฉันมีนัดไว้กับเพื่อนสาวของฉัน"
+            },
+            {
+                emoji: "🍷", verb: "einladen zu + Dat.",
+                th: "เขาเชิญคุณไปงานอะไร?",
+                question: "<span class='blank-space'>_____</span> hat er dich eingeladen?",
+                optA: "A) Wozu", optB: "B) Wofür", correct: "A",
+                vocab: ["einladen zu + Dat.", "die Party (ปาร์ตี้)", "Er hat mich eingeladen zu..."],
+                solDe: "Wozu hat er dich eingeladen? – Er hat mich zur Party eingeladen.",
+                solTh: "เขาเชิญคุณไปงานอะไร? – เขาเชิญฉันไปงานปาร์ตี้"
+            },
+            {
+                emoji: "🩺", verb: "sich kümmern um + Akk.",
+                th: "ใครเป็นคนดูแลเด็กๆ?",
+                question: "<span class='blank-space'>_____</span> kümmert sich die Oma?",
+                optA: "A) Um wen", optB: "B) Für wen", correct: "A",
+                vocab: ["sich kümmern um + Akk.", "die Kinder (เด็กๆ)", "Sie kümmert sich um..."],
+                solDe: "Um wen kümmert sich die Oma? – Sie kümmert sich um die Kinder.",
+                solTh: "คุณยายดูแลใครอยู่? – ยายกำลังดูแลเด็กๆ"
+            },
+            {
+                emoji: "🛑", verb: "aufhören mit + Dat.",
+                th: "เมื่อไหร่คุณจะหยุดสูบบุหรี่?",
+                question: "Wann hörst du <span class='blank-space'>_____</span> dem Rauchen auf?",
+                optA: "A) mit", optB: "B) von", correct: "A",
+                vocab: ["aufhören mit + Dat.", "das Rauchen (การสูบบุหรี่)", "Ich höre auf mit..."],
+                solDe: "Wann hörst du mit dem Rauchen auf? – Ich höre bald damit auf.",
+                solTh: "เมื่อไหร่คุณจะเลิกสูบบุหรี่? – อีกไม่นานฉันจะเลิกแล้ว"
+            },
+            {
+                emoji: "🏁", verb: "anfangen mit + Dat.",
+                th: "เมื่อไหร่พวกเราจะเริ่มเรียนกัน?",
+                question: "Wann fangen wir <span class='blank-space'>_____</span> dem Unterricht an?",
+                optA: "A) mit", optB: "B) bei", correct: "A",
+                vocab: ["anfangen mit + Dat.", "der Unterricht (การเรียน)", "Wir fangen an mit..."],
+                solDe: "Wann fangen wir mit dem Unterricht an? – Wir fangen jetzt damit an.",
+                solTh: "เมื่อไหร่พวกเราจะเริ่มเรียนกัน? – พวกเราจะเริ่มเดี๋ยวนี้เลย"
+            },
+            {
+                emoji: "🤝", verb: "sich verlassen auf + Akk.",
+                th: "ฉันสามารถเชื่อใจ/พึ่งพาคุณได้ไหม?",
+                question: "Kann ich mich <span class='blank-space'>_____</span> dich verlassen?",
+                optA: "A) auf", optB: "B) an", correct: "A",
+                vocab: ["sich verlassen auf + Akk.", "auf mich (ตัวฉัน)", "Du kannst dich verlassen auf..."],
+                solDe: "Kann ich mich auf dich verlassen? – Ja, du kannst dich auf mich verlassen.",
+                solTh: "ฉันพึ่งพาคุณได้ไหม? – ได้สิ คุณไว้ใจฉันได้เลย"
+            },
+            {
+                emoji: "💵", verb: "ausgeben für + Akk.",
+                th: "คุณใช้จ่ายเงินไปกับอะไรเยอะที่สุด?",
+                question: "<span class='blank-space'>_____</span> gibst du viel Geld aus?",
+                optA: "A) Wofür", optB: "B) Wozu", correct: "A",
+                vocab: ["ausgeben für + Akk.", "das Essen (อาหาร)", "Ich gebe Geld aus für..."],
+                solDe: "Wofür gibst du viel Geld aus? – Ich gebe viel Geld für Essen aus.",
+                solTh: "คุณหมดเงินไปกับอะไรเยอะ? – ฉันจ่ายเงินไปกับอาหารเยอะมาก"
+            },
+            {
+                emoji: "💍", verb: "sich verlieben in + Akk.",
+                th: "เขาตกหลุมรักใครเหรอ?",
+                question: "<span class='blank-space'>_____</span> hat er sich verliebt?",
+                optA: "A) In wen", optB: "B) An wen", correct: "A",
+                vocab: ["sich verlieben in + Akk.", "die Kollegin (เพื่อนร่วมงาน)", "Er hat sich verliebt in..."],
+                solDe: "In wen hat er sich verliebt? – Er hat sich in seine Kollegin verliebt.",
+                solTh: "เขาตกหลุมรักใคร? – เขาตกหลุมรักเพื่อนร่วมงานของเขา"
+            },
+            {
+                emoji: "📧", verb: "antworten auf + Akk.",
+                th: "คุณตอบอีเมลนั้นหรือยัง?",
+                question: "Hast du <span class='blank-space'>_____</span> die E-Mail geantwortet?",
+                optA: "A) auf", optB: "B) für", correct: "A",
+                vocab: ["antworten auf + Akk.", "die E-Mail (อีเมล)", "Ich habe geantwortet auf..."],
+                solDe: "Hast du auf die E-Mail geantwortet? – Ja, ich habe darauf geantwortet.",
+                solTh: "คุณตอบอีเมลนั้นหรือยัง? – ใช่ ฉันตอบอีเมลนั้นแล้ว"
+            },
+            {
+                emoji: "✍️", verb: "schreiben an + Akk.",
+                th: "คุณกำลังเขียนจดหมายถึงใคร?",
+                question: "<span class='blank-space'>_____</span> schreibst du einen Brief?",
+                optA: "A) An wen", optB: "B) Auf wen", correct: "A",
+                vocab: ["schreiben an + Akk.", "der Freund (เพื่อน)", "Ich schreibe an..."],
+                solDe: "An wen schreibst du einen Brief? – Ich schreibe an meinen Freund.",
+                solTh: "คุณเขียนจดหมายถึงใคร? – ฉันเขียนถึงเพื่อนของฉัน"
+            },
+            {
+                emoji: "🗣️", verb: "erzählen von + Dat.",
+                th: "คุณช่วยเล่าเรื่องวันหยุดให้ฟังหน่อยได้ไหม?",
+                question: "Erzählst du mir <span class='blank-space'>_____</span> deinem Urlaub?",
+                optA: "A) von", optB: "B) über", correct: "A",
+                vocab: ["erzählen von + Dat.", "der Urlaub (วันหยุด)", "Ich erzähle von..."],
+                solDe: "Erzählst du mir von deinem Urlaub? – Ja, ich erzähle dir gerne davon.",
+                solTh: "เล่าเรื่องวันหยุดให้ฟังหน่อยได้ไหม? – ได้สิ ฉันยินดีเล่าให้ฟัง"
+            },
+            {
+                emoji: "🚗", verb: "passen zu + Dat.",
+                th: "เสื้อตัวนี้เข้ากับกางเกงไหม?",
+                question: "Passt das Hemd <span class='blank-space'>_____</span> Hose?",
+                optA: "A) zur", optB: "B) für die", correct: "A",
+                vocab: ["passen zu + Dat.", "die Hose (กางเกง)", "Es passt zu..."],
+                solDe: "Passt das Hemd zur Hose? – Ja, es passt sehr gut dazu.",
+                solTh: "เสื้อเชิ้ตเข้ากับกางเกงไหม? – เข้ากันได้ดีมากๆ เลย"
+            },
+            {
+                emoji: "☕", verb: "einladen auf + Akk.",
+                th: "ฉันขอเลี้ยงกาแฟคุณสักแก้วได้ไหม?",
+                question: "Darf ich dich <span class='blank-space'>_____</span> einen Kaffee einladen?",
+                optA: "A) auf", optB: "B) zu", correct: "A",
+                vocab: ["einladen auf + Akk.", "der Kaffee (กาแฟ)", "Sehr gerne!"],
+                solDe: "Darf ich dich auf einen Kaffee einladen? – Ja, sehr gerne!",
+                solTh: "ขอเลี้ยงกาแฟสักแก้วได้ไหม? – ได้สิ ด้วยความยินดี!"
+            },
+            {
+                emoji: "💬", verb: "sich unterhalten über + Akk.",
+                th: "พวกคุณกำลังคุยกันเรื่องอะไร?",
+                question: "<span class='blank-space'>_____</span> unterhaltet ihr euch?",
+                optA: "A) Worüber", optB: "B) Wovon", correct: "A",
+                vocab: ["sich unterhalten über + Akk.", "der Film (ภาพยนตร์)", "Wir unterhalten uns über..."],
+                solDe: "Worüber unterhaltet ihr euch? – Wir unterhalten uns über den neuen Film.",
+                solTh: "พวกคุณคุยกันเรื่องอะไร? – พวกเรากำลังคุยกันเรื่องหนังเรื่องใหม่"
+            },
+            {
+                emoji: "💼", verb: "arbeiten bei + Dat.",
+                th: "คุณทำงานอยู่ที่บริษัทไหน?",
+                question: "<span class='blank-space'>_____</span> welcher Firma arbeitest du?",
+                optA: "A) Bei", optB: "B) Mit", correct: "A",
+                vocab: ["arbeiten bei + Dat.", "die Firma (บริษัท)", "Ich arbeite bei..."],
+                solDe: "Bei welcher Firma arbeitest du? – Ich arbeite bei Siemens.",
+                solTh: "คุณทำงานอยู่บริษัทไหน? – ฉันทำงานอยู่ที่บริษัท Siemens"
+            },
+            {
+                emoji: "🔑", verb: "gehören + Dat.",
+                th: "กุญแจนี้เป็นของใคร?",
+                question: "<span class='blank-space'>_____</span> gehört dieser Schlüssel?",
+                optA: "A) Wem", optB: "B) Wen", correct: "A",
+                vocab: ["gehören + Dat.", "der Schlüssel (กุญแจ)", "Er gehört..."],
+                solDe: "Wem gehört dieser Schlüssel? – Er gehört mir.",
+                solTh: "กุญแจนี้เป็นของใคร? – มันเป็นของฉันเอง"
+            },
+            {
+                emoji: "🎶", verb: "hören von + Dat.",
+                th: "คุณได้ข่าวจากเขาบ้างไหม?",
+                question: "Hast du etwas <span class='blank-space'>_____</span> ihm gehört?",
+                optA: "A) von", optB: "B) über", correct: "A",
+                vocab: ["hören von + Dat.", "nichts Neues (ไม่มีข่าวใหม่)", "Ich habe gehört von..."],
+                solDe: "Hast du etwas von ihm gehört? – Nein, ich habe lange nichts von ihm gehört.",
+                solTh: "คุณได้ข่าวจากเขาบ้างไหม? – ไม่เลย ฉันไม่ได้ข่าวจากเขานานแล้ว"
+            },
+            {
+                emoji: "🚪", verb: "sich anmelden für + Akk.",
+                th: "คุณลงชื่อสมัครคอร์สเรียนแล้วหรือยัง?",
+                question: "Hast du dich <span class='blank-space'>_____</span> den Kurs angemeldet?",
+                optA: "A) für", optB: "B) auf", correct: "A",
+                vocab: ["sich anmelden für + Akk.", "der Sprachkurs (คอร์สภาษา)", "Ich habe mich angemeldet für..."],
+                solDe: "Hast du dich für den Kurs angemeldet? – Ja, ich habe mich dafür angemeldet.",
+                solTh: "คุณลงชื่อสมัครคอร์สหรือยัง? – ใช่ ฉันลงชื่อเรียบร้อยแล้ว"
+            },
+            {
+                emoji: "👮", verb: "sich beschweren bei + Dat.",
+                th: "คุณไปร้องเรียนกับใครมา?",
+                question: "<span class='blank-space'>_____</span> beschwerst du dich?",
+                optA: "A) Bei wem", optB: "B) Mit wem", correct: "A",
+                vocab: ["sich beschweren bei + Dat.", "der Chef (เจ้านาย)", "Ich beschwere mich bei..."],
+                solDe: "Bei wem beschwerst du dich? – Ich beschwere mich beim Chef.",
+                solTh: "คุณไปร้องเรียนกับใคร? – ฉันไปร้องเรียนกับหัวหน้า"
+            },
+            {
+                emoji: "⚽", verb: "spielen mit + Dat.",
+                th: "เด็กๆ เล่นอยู่กับใคร?",
+                question: "<span class='blank-space'>_____</span> spielt das Kind?",
+                optA: "A) Mit wem", optB: "B) Bei wem", correct: "A",
+                vocab: ["spielen mit + Dat.", "der Hund (สุนัข)", "Es spielt mit..."],
+                solDe: "Mit wem spielt das Kind? – Es spielt mit dem Hund.",
+                solTh: "เด็กเล่นอยู่กับใคร? – เด็กกำลังเล่นอยู่กับสุนัข"
+            },
+            {
+                emoji: "🎓", verb: "gratulieren zu + Dat.",
+                th: "ยินดีด้วยนะ! สอบผ่านแล้วใช่ไหม?",
+                question: "Ich gratuliere dir <span class='blank-space'>_____</span> bestandenen Prüfung!",
+                optA: "A) zur", optB: "B) für die", correct: "A",
+                vocab: ["gratulieren zu + Dat.", "die Prüfung (การสอบ)", "Vielen Dank!"],
+                solDe: "Ich gratuliere dir zur bestandenen Prüfung! – Vielen Dank!",
+                solTh: "ยินดีด้วยกับการสอบผ่านนะ! – ขอบคุณมากๆ ครับ/ค่ะ"
+            },
+            {
+                emoji: "🐱", verb: "sich kümmern um + Akk.",
+                th: "คุณช่วยดูแลแมวให้ฉันหน่อยได้ไหม?",
+                question: "Kannst du dich <span class='blank-space'>_____</span> meine Katze kümmern?",
+                optA: "A) um", optB: "B) für", correct: "A",
+                vocab: ["sich kümmern um + Akk.", "die Katze (แมว)", "Gerne!"],
+                solDe: "Kannst du dich um meine Katze kümmern? – Ja, ich kümmere mich gerne darum.",
+                solTh: "ช่วยดูแลแมวให้หน่อยได้ไหม? – ได้สิ ฉันยินดีดูแลให้"
+            },
+            {
+                emoji: "💡", verb: "denken an + Akk.",
+                th: "อย่าลืมคิดถึงการนัดหมายด้วยนะ!",
+                question: "Denkst du <span class='blank-space'>_____</span> den Termin?",
+                optA: "A) an", optB: "B) auf", correct: "A",
+                vocab: ["denken an + Akk.", "der Termin (นัดหมาย)", "Ich denke daran."],
+                solDe: "Denkst du an den Termin? – Ja, ich denke daran.",
+                solTh: "คุณจำนัดหมายได้ใช่ไหม? – ใช่ ฉันจำได้อยู่"
+            },
+            {
+                emoji: "🤝", verb: "passen zu + Dat.",
+                th: "สีนี้เหมาะกับคุณมากเลย!",
+                question: "Diese Farbe passt gut <span class='blank-space'>_____</span> dir.",
+                optA: "A) zu", optB: "B) mit", correct: "A",
+                vocab: ["passen zu + Dat.", "die Farbe (สี)", "Danke!"],
+                solDe: "Diese Farbe passt gut zu dir. – Danke für das Kompliment!",
+                solTh: "สีนี้เข้ากับคุณจังเลย! – ขอบคุณสำหรับคำชมนพ"
+            },
+            {
+                emoji: "🤝", verb: "gehören zu + Dat.",
+                th: "ความเพียรพยายามเป็นส่วนหนึ่งของความสำเร็จ",
+                question: "Fleiß gehört <span class='blank-space'>_____</span> Erfolg.",
+                optA: "A) zum", optB: "B) für den", correct: "A",
+                vocab: ["gehören zu + Dat.", "der Erfolg (ความสำเร็จ)", "Das stimmt!"],
+                solDe: "Fleiß gehört zum Erfolg. – Das stimmt absolut!",
+                solTh: "ความขยันเป็นส่วนหนึ่งของความสำเร็จ – เห็นด้วยอย่างยิ่ง!"
+            },
+            {
+                emoji: "📚", verb: "sprechen über + Akk.",
+                th: "พวกคุณคุยเรื่องการสอบกันอยู่หรือเปล่า?",
+                question: "Sprecht ihr <span class='blank-space'>_____</span> die Prüfung?",
+                optA: "A) über", optB: "B) von", correct: "A",
+                vocab: ["sprechen über + Akk.", "die Prüfung (การสอบ)", "Wir sprechen über..."],
+                solDe: "Sprecht ihr über die Prüfung? – Ja, wir sprechen über die B1-Prüfung.",
+                solTh: "พวกคุณคุยเรื่องการสอบกันอยู่เหรอ? – ใช่ พวกเราคุยเรื่องการสอบ B1"
+            }
+        ];
+
+        let drawPool = [...masterDeck];
+        let currentCard = null;
+        let timer = null;
+        let timeLeft = 60;
+        let isSolutionOpen = false;
+
+        // Shuffle deck function (Kein wiederholte Karte)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize App
+        shuffle(drawPool);
+
+        function drawCard() {
+            if (drawPool.length === 0) {
+                drawPool = [...masterDeck];
+                shuffle(drawPool);
+                alert("สับไพ่ใหม่! คุณฝึกทำครบทั้ง 50 ใบเรียบร้อยแล้ว");
+            }
+
+            currentCard = drawPool.pop();
+
+            // Update Counter
+            document.getElementById("cardCounter").innerText = `การ์ด: ${masterDeck.length - drawPool.length} / 50`;
+
+            // Update Illustration
+            document.getElementById("visualEmoji").innerText = currentCard.emoji;
+            document.getElementById("visualTopic").innerText = `Thema: ${currentCard.verb}`;
+
+            // Update Prompts
+            document.getElementById("promptTh").innerText = currentCard.th;
+            document.getElementById("promptDe").innerHTML = currentCard.question;
+
+            // Update Choices
+            let btnA = document.getElementById("choiceA");
+            let btnB = document.getElementById("choiceB");
+            btnA.innerText = currentCard.optA;
+            btnB.innerText = currentCard.optB;
+            btnA.className = "btn-choice";
+            btnB.className = "btn-choice";
+            btnA.disabled = false;
+            btnB.disabled = false;
+
+            // Update Vocab Chips
+            let helpChips = document.getElementById("helpChips");
+            helpChips.innerHTML = "";
+            currentCard.vocab.forEach(word => {
+                let chip = document.createElement("span");
+                chip.className = "chip";
+                chip.innerText = word;
+                helpChips.appendChild(chip);
+            });
+
+            // Reset Solution Box
+            isSolutionOpen = false;
+            document.getElementById("solutionBox").classList.remove("active");
+            let btnSol = document.getElementById("btnToggleSolution");
+            btnSol.disabled = false;
+            btnSol.innerText = "👁️ เฉลย";
+            document.getElementById("solutionDe").innerText = currentCard.solDe;
+            document.getElementById("solutionTh").innerText = currentCard.solTh;
+
+            // Reset Timer
+            resetTimer();
+        }
+
+        function checkAnswer(selectedOption) {
+            if (!currentCard) return;
+
+            clearInterval(timer); // Pause Timer after selection
+
+            let btnA = document.getElementById("choiceA");
+            let btnB = document.getElementById("choiceB");
+            btnA.disabled = true;
+            btnB.disabled = true;
+
+            if (selectedOption === currentCard.correct) {
+                if (selectedOption === 'A') btnA.classList.add('correct');
+                else btnB.classList.add('correct');
+            } else {
+                if (selectedOption === 'A') btnA.classList.add('incorrect');
+                else btnB.classList.add('incorrect');
+
+                if (currentCard.correct === 'A') btnA.classList.add('correct');
+                else btnB.classList.add('correct');
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            let duration = parseInt(document.getElementById("timerSelect").value, 10);
+            timeLeft = duration;
+            updateTimerUI();
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerUI();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("timerDisplay").innerText = "⏰ หมดเวลา!";
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            document.getElementById("timerDisplay").innerText = 
+                `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+        }
+
+        function toggleSolution() {
+            isSolutionOpen = !isSolutionOpen;
+            let solBox = document.getElementById("solutionBox");
+            let btnSol = document.getElementById("btnToggleSolution");
+
+            if (isSolutionOpen) {
+                solBox.classList.add("active");
+                btnSol.innerText = "🙈 ซ่อนเฉลย";
+            } else {
+                solBox.classList.remove("active");
+                btnSol.innerText = "👁️ เฉลย";
+            }
+        }
+
+        function playAudio() {
+            if (!currentCard) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(currentCard.solDe);
+                utterance.lang = 'de-DE';
+                utterance.rate = 0.9; // Speech speed
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("เบราว์เซอร์ของคุณไม่รองรับการเล่นเสียงอ่านอัตโนมัติ");
+            }
+        }
+    </script>
+</body>
+</html>
